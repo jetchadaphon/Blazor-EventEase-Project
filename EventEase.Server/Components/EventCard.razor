@@ -1,0 +1,14 @@
+@using EventEase.Server.Models
+@inject NavigationManager Nav
+
+<div class="event-card">
+    <h3>@Event.Title</h3>
+    <p>@Event.Date.ToString("g") — @Event.Location</p>
+    <p>@(Event.Description?.Length > 120 ? Event.Description.Substring(0,120) + "..." : Event.Description)</p>
+    <button @onclick="() => Nav.NavigateTo($"/event/{Event.Id}")">Details</button>
+    <button @onclick="() => Nav.NavigateTo($"/register/{Event.Id}")">Register</button>
+</div>
+
+@code {
+    [Parameter] public Event Event { get; set; } = default!;
+}

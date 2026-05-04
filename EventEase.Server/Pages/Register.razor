@@ -1,0 +1,63 @@
+@page "/register/{Id:int}"
+@inject IEventService EventService
+@inject EventStateService State
+@inject NavigationManager Nav
+
+<h2>Register</h2>
+
+@if (ev == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h3>@ev.Title</h3>
+    <EditForm Model="registration" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <label>Name</label>
+            <InputText @bind-Value="registration.Name" />
+            <ValidationMessage For="() => registration.Name" />
+        </div>
+        <div>
+            <label>Email</label>
+            <InputText @bind-Value="registration.Email" />
+            <ValidationMessage For="() => registration.Email" />
+        </div>
+        <div>
+            <label>Tickets</label>
+            <InputNumber @bind-Value="registration.Tickets" />
+            <ValidationMessage For="() => registration.Tickets" />
+        </div>
+        <button type="submit">Submit</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    Event? ev;
+    Registration registration = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ev = await EventService.GetEventAsync(Id);
+        registration.EventId = Id;
+    }
+
+    async Task HandleValidSubmit()
+    {
+        var ok = await EventService.RegisterAsync(registration);
+        if (ok)
+        {
+            State.IsRegistered = true;
+            await State.SaveAsync();
+            Nav.NavigateTo($"/confirmation");
+        }
+        else
+        {
+            // show error (simple)
+            await Task.Yield();
+        }
+    }
+}

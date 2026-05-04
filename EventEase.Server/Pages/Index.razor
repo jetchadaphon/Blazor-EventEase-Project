@@ -1,0 +1,29 @@
+@page "/"
+@inject IEventService EventService
+@inject EventStateService State
+
+<h2>Upcoming Events</h2>
+
+@if (events == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="events">
+        @foreach (var ev in events)
+        {
+            <Components.EventCard Event="ev" />
+        }
+    </div>
+}
+
+@code {
+    List<Event>? events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await State.LoadAsync();
+        events = await EventService.GetEventsAsync();
+    }
+}

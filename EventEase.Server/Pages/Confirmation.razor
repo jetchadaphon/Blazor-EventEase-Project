@@ -1,0 +1,13 @@
+@page "/confirmation"
+@inject EventStateService State
+
+<h2>Registration Confirmation</h2>
+
+@if (State.IsRegistered)
+{
+    <p>Thank you — your registration is successful.</p>
+}
+else
+{
+    <p>No recent registration found.</p>
+}

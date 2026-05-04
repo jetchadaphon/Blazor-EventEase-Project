@@ -1,0 +1,33 @@
+@page "/event/{Id:int}"
+@inject IEventService EventService
+@inject EventStateService State
+@inject NavigationManager Nav
+
+<h2>Event Details</h2>
+
+@if (ev == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h3>@ev.Title</h3>
+    <p>@ev.Description</p>
+    <p>@ev.Date.ToString("g") — @ev.Location</p>
+    <p>Capacity: @ev.Capacity</p>
+    <button @onclick="() => GoRegister(ev.Id)">Register</button>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    Event? ev;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ev = await EventService.GetEventAsync(Id);
+        State.SelectedEventId = Id;
+        await State.SaveAsync();
+    }
+
+    void GoRegister(int id) => Nav.NavigateTo($"/register/{id}");
+}
