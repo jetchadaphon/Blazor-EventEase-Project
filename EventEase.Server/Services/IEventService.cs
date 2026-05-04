@@ -7,4 +7,5 @@ public interface IEventService
     Task<List<Event>> GetEventsAsync();
     Task<Event?> GetEventAsync(int id);
     Task<bool> RegisterAsync(Registration reg);
+    Task<int> GetRemainingSeatsAsync(int eventId);
 }

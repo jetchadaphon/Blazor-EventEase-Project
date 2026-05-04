@@ -14,7 +14,7 @@ else
     <h3>@ev.Title</h3>
     <p>@ev.Description</p>
     <p>@ev.Date.ToString("g") — @ev.Location</p>
-    <p>Capacity: @ev.Capacity</p>
+    <p>Capacity: @ev.Capacity — <strong>Seats left: @remaining</strong></p>
     <button @onclick="() => GoRegister(ev.Id)">Register</button>
 }
 
@@ -26,6 +26,7 @@ else
     {
         ev = await EventService.GetEventAsync(Id);
         State.SelectedEventId = Id;
+        remaining = await EventService.GetRemainingSeatsAsync(Id);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -35,6 +36,17 @@ else
             await State.SaveAsync();
         }
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != 0)
+        {
+            remaining = await EventService.GetRemainingSeatsAsync(Id);
+            StateHasChanged();
+        }
+    }
+
+    private int remaining = 0;
 
     void GoRegister(int id) => Nav.NavigateTo($"/register/{id}");
 }

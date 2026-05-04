@@ -25,4 +25,12 @@ public class EventService : IEventService
         await _ctx.SaveChangesAsync();
         return true;
     }
+
+    public async Task<int> GetRemainingSeatsAsync(int eventId)
+    {
+        var ev = await _ctx.Events.FindAsync(eventId);
+        if (ev == null) return 0;
+        var current = await _ctx.Registrations.Where(r => r.EventId == eventId).SumAsync(r => (int?)r.Tickets) ?? 0;
+        return Math.Max(0, ev.Capacity - current);
+    }
 }
