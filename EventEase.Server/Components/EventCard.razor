@@ -1,13 +1,18 @@
 @using EventEase.Server.Models
 @inject NavigationManager Nav
 
-<div class="event-card">
-    <h3>@Event.Title</h3>
-    <p>@Event.Date.ToString("g") — @Event.Location</p>
-    <p>@(Event.Description?.Length > 120 ? Event.Description.Substring(0,120) + "..." : Event.Description)</p>
-    <button @onclick="() => Nav.NavigateTo($"/event/{Event.Id}")">Details</button>
-    <button @onclick="() => Nav.NavigateTo($"/register/{Event.Id}")">Register</button>
-</div>
+<article class="event-card">
+        <div>
+            <h3>@Event.Title</h3>
+            <div class="muted">@Event.Date.ToString("g") — @Event.Location</div>
+            <p class="muted">@(Event.Description?.Length > 120 ? Event.Description.Substring(0,120) + "..." : Event.Description)</p>
+        </div>
+        <div class="row">
+            <span class="badge">Capacity: @Event.Capacity</span>
+            <button class="btn secondary" @onclick='() => Nav.NavigateTo("/event/" + Event.Id)'>Details</button>
+            <button class="btn" @onclick='() => Nav.NavigateTo("/register/" + Event.Id)'>Register</button>
+        </div>
+</article>
 
 @code {
     [Parameter] public Event Event { get; set; } = default!;

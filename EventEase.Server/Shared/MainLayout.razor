@@ -1,15 +1,20 @@
 @inherits LayoutComponentBase
-<div class="page">
+<div class="root">
     <header>
-        <h1>EventEase</h1>
-        <nav>
-            <a href="/">Home</a>
-        </nav>
+        <div class="container">
+            <h1>EventEase</h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/">Events</a>
+            </nav>
+        </div>
     </header>
-    <main>
+
+    <main class="container">
         @Body
     </main>
-    <footer>
-        <small>&copy; EventEase</small>
+
+    <footer class="container">
+        <small class="muted">&copy; EventEase</small>
     </footer>
 </div>

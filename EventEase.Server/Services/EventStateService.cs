@@ -14,12 +14,28 @@ public class EventStateService
     public async Task SaveAsync()
     {
         var data = JsonSerializer.Serialize(new { SelectedEventId, IsRegistered });
-        await _js.InvokeVoidAsync("eventEase.saveState", data);
+        try
+        {
+            await _js.InvokeVoidAsync("eventEase.saveState", data);
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerender; ignore.
+        }
     }
 
     public async Task LoadAsync()
     {
-        var json = await _js.InvokeAsync<string>("eventEase.loadState");
+        string? json = null;
+        try
+        {
+            json = await _js.InvokeAsync<string>("eventEase.loadState");
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerender; nothing to load now.
+            return;
+        }
         if (string.IsNullOrEmpty(json)) return;
         try
         {

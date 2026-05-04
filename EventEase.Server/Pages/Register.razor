@@ -12,41 +12,58 @@
 else
 {
     <h3>@ev.Title</h3>
-    <EditForm Model="registration" OnValidSubmit="HandleValidSubmit">
+    <EditForm EditContext="editContext" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
         <div>
             <label>Name</label>
-            <InputText @bind-Value="registration.Name" />
+            <InputText @bind-Value="registration.Name" class="input" />
             <ValidationMessage For="() => registration.Name" />
         </div>
         <div>
             <label>Email</label>
-            <InputText @bind-Value="registration.Email" />
+            <InputText @bind-Value="registration.Email" class="input" />
             <ValidationMessage For="() => registration.Email" />
         </div>
         <div>
             <label>Tickets</label>
-            <InputNumber @bind-Value="registration.Tickets" />
+            <InputNumber @bind-Value="registration.Tickets" class="input" />
             <ValidationMessage For="() => registration.Tickets" />
         </div>
-        <button type="submit">Submit</button>
+        <div style="margin-top:12px">
+            <button class="btn" type="submit" disabled="@(!isFormValid)">Submit</button>
+        </div>
     </EditForm>
+
+    @if (submitError)
+    {
+        <div class="muted">Registration failed (capacity may be full).</div>
+    }
 }
 
 @code {
     [Parameter] public int Id { get; set; }
     Event? ev;
     Registration registration = new();
+    private EditContext? editContext;
+    private bool isFormValid = false;
+    private bool submitError = false;
 
     protected override async Task OnInitializedAsync()
     {
         ev = await EventService.GetEventAsync(Id);
         registration.EventId = Id;
+        editContext = new EditContext(registration);
+        isFormValid = editContext.Validate();
+        editContext.OnFieldChanged += (_, __) => {
+            isFormValid = editContext.Validate();
+            InvokeAsync(StateHasChanged);
+        };
     }
 
     async Task HandleValidSubmit()
     {
+        submitError = false;
         var ok = await EventService.RegisterAsync(registration);
         if (ok)
         {
@@ -56,8 +73,8 @@ else
         }
         else
         {
-            // show error (simple)
-            await Task.Yield();
+            submitError = true;
+            StateHasChanged();
         }
     }
 }

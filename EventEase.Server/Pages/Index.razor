@@ -13,7 +13,7 @@ else
     <div class="events">
         @foreach (var ev in events)
         {
-            <Components.EventCard Event="ev" />
+            <EventCard Event="ev" />
         }
     </div>
 }
@@ -23,7 +23,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await State.LoadAsync();
         events = await EventService.GetEventsAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await State.LoadAsync();
+            StateHasChanged();
+        }
     }
 }

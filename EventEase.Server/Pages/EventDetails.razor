@@ -26,7 +26,14 @@ else
     {
         ev = await EventService.GetEventAsync(Id);
         State.SelectedEventId = Id;
-        await State.SaveAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await State.SaveAsync();
+        }
     }
 
     void GoRegister(int id) => Nav.NavigateTo($"/register/{id}");
